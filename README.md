@@ -3,8 +3,10 @@ title: Stable Fast 3D
 emoji: 🎮
 colorFrom: purple
 colorTo: indigo
-sdk: docker
-app_port: 7860
+sdk: gradio
+sdk_version: 4.31.4
+python_version: 3.10.13
+app_file: app.py
 pinned: false
 models: 
   - stabilityai/stable-fast-3d
