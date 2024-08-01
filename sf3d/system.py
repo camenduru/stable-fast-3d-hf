@@ -29,6 +29,8 @@ from sf3d.models.utils import (
 )
 from sf3d.utils import create_intrinsic_from_fov_deg, default_cond_c2w
 
+from .texture_baker import TextureBaker
+
 
 class SF3D(BaseModule):
     @dataclass
@@ -134,6 +136,7 @@ class SF3D(BaseModule):
             ),
         )
 
+        self.baker = TextureBaker()
         self.image_processor = ImageProcessor()
 
     def triplane_to_meshes(
@@ -281,9 +284,6 @@ class SF3D(BaseModule):
         bake_resolution: int,
         estimate_illumination: bool = False,
     ) -> Tuple[List[trimesh.Trimesh], dict[str, Any]]:
-        from .texture_baker import TextureBaker
-
-        baker = TextureBaker()
         batch["rgb_cond"] = self.image_processor(
             batch["rgb_cond"], self.cfg.cond_image_size
         )
@@ -314,10 +314,12 @@ class SF3D(BaseModule):
                     mesh.unwrap_uv()
 
                     # Build textures
-                    rast = baker.rasterize(mesh.v_tex, mesh.t_pos_idx, bake_resolution)
-                    bake_mask = baker.get_mask(rast)
+                    rast = self.baker.rasterize(
+                        mesh.v_tex, mesh.t_pos_idx, bake_resolution
+                    )
+                    bake_mask = self.baker.get_mask(rast)
 
-                    pos_bake = baker.interpolate(
+                    pos_bake = self.baker.interpolate(
                         mesh.v_pos,
                         rast,
                         mesh.t_pos_idx,
@@ -330,7 +332,7 @@ class SF3D(BaseModule):
                         tri_query, exclude=["density", "vertex_offset"]
                     )
 
-                    nrm = baker.interpolate(
+                    nrm = self.baker.interpolate(
                         mesh.v_nrm,
                         rast,
                         mesh.t_pos_idx,
@@ -371,7 +373,7 @@ class SF3D(BaseModule):
                             if k == "normal":
                                 # Use un-normalized tangents here so that larger smaller tris
                                 # Don't effect the tangents that much
-                                tng = baker.interpolate(
+                                tng = self.baker.interpolate(
                                     mesh.v_tng,
                                     rast,
                                     mesh.t_pos_idx,
