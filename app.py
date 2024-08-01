@@ -55,7 +55,7 @@ def run_model(input_image):
     # Create new tmp file
     tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".glb")
 
-    trimesh_mesh.export(tmp_file.name, file_type="glb")
+    trimesh_mesh.export(tmp_file.name, file_type="glb", include_normals=True)
 
     print("Generation took:", time.time() - start, "s")
 

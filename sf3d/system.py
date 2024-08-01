@@ -395,7 +395,6 @@ class SF3D(BaseModule):
                                     ),
                                     -1,
                                 )
-                                bump[..., :2] *= 0.5
                                 bump = (bump * 0.5 + 0.5).clamp(0, 1)
 
                                 f[bake_mask] = bump.view(-1, 3)
