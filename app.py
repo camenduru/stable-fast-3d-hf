@@ -9,7 +9,6 @@ import numpy as np
 import rembg
 import torch
 from gradio_litmodel3d import LitModel3D
-import spaces
 from PIL import Image
 
 import sf3d.utils as sf3d_utils
@@ -42,7 +41,6 @@ example_files = [
 ]
 
 
-@spaces.GPU
 def run_model(input_image):
     start = time.time()
     with torch.no_grad():
